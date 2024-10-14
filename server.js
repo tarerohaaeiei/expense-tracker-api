@@ -12,6 +12,10 @@ const app = express();
 app.use(express.json());
 
 // Routes
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK' });
+});
+
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/expenses', require('./routes/expenseRoutes'));
 
