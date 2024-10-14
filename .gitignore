@@ -1,5 +1,33 @@
+# Ignore environment variables
 .env
-node_modules
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore npm debug logs
 npm-debug.log
-Dockerfile
+
+# Ignore Docker-related files that are not needed in version control
 .dockerignore
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore coverage reports
+coverage/
+
+# Ignore build artifacts
+dist/
+build/
+
+# Ignore temporary files
+*.tmp
+
+# Ignore IDE configuration files (example for VS Code)
+.vscode/
+.idea/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
