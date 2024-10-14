@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # ระบุพอร์ตที่ Express.js ใช้งาน
-EXPOSE 3000
+EXPOSE 5000
 
 # รันคำสั่งเริ่มต้นให้กับแอป
 CMD ["npm", "start"]
