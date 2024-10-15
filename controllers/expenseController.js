@@ -22,7 +22,7 @@ exports.getExpenses = async (req, res) => {
 
     const totalExpenses = await Expense.countDocuments(query);
 
-    res.json({
+    res.status(200).json({
       totalExpenses,
       currentPage: parseInt(page),
       totalPages: Math.ceil(totalExpenses / limit),
