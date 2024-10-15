@@ -40,24 +40,37 @@ describe('Expense API', () => {
 
     describe('GET /api/expenses', () => {
         it('should return expenses for the user', async () => {
-            const expense = new Expense({
-                title: 'Test Expense',
-                amount: 100,
-                date: new Date(),
-                category: 'Food',
-                notes: 'Test note',
-                user: user._id,
-            });
-            await expense.save();
+            for (let i = 1; i <= 15; i++) {
+                const expense = new Expense({
+                    title: `Test Expense ${i}`,
+                    amount: 100,
+                    date: new Date(),
+                    category: 'Food',
+                    notes: `Test note ${i}`,
+                    user: user._id,
+                });
+                await expense.save();
+            }
 
-            const response = await request(app)
+            let response = await request(app)
                 .get('/api/expenses')
                 .set('Authorization', `Bearer ${token}`);
 
             expect(response.statusCode).toBe(200);
-            expect(response.body).toHaveLength(1);
-            expect(response.body[0].title).toBe('Test Expense');
-            expenseId = response.body[0].id;
+            expect(response.body.totalExpenses).toBe(15);
+            expect(response.body.currentPage).toBe(1);
+            expect(response.body.totalPages).toBe(2);
+            expect(response.body.expenses).toHaveLength(10); 
+            expect(response.body.expenses[0].title).toBe('Test Expense 1');
+
+            response = await request(app)
+                .get('/api/expenses?page=2')
+                .set('Authorization', `Bearer ${token}`);
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body.currentPage).toBe(2); 
+            expect(response.body.expenses).toHaveLength(5);
+            expect(response.body.expenses[0].title).toBe('Test Expense 11'); 
         });
     });
 
@@ -165,17 +178,17 @@ describe('Expense API', () => {
                         { category: 'Groceries', totalAmount: 1613.25, totalCount: 2 },
                     ],
                     overallTotal: 112835.75,
-                    overallCount: 4, 
+                    overallCount: 4,
                 }
             ];
-        
+
             jest.spyOn(Expense, 'aggregate').mockResolvedValue(mockReport);
-        
+
             const response = await request(app)
                 .get('/api/expenses/reports')
                 .query({ startDate: '2024-10-01', endDate: '2024-10-31' })
                 .set('Authorization', `Bearer ${token}`);
-        
+
             expect(response.status).toBe(200);
             expect(response.body).toHaveProperty('categories');
             expect(response.body).toHaveProperty('overallTotal');
@@ -183,10 +196,10 @@ describe('Expense API', () => {
             expect(response.body.categories.length).toBe(2);
             expect(response.body.overallTotal).toBe(112835.75);
             expect(response.body.overallCount).toBe(4);
-        
+
             Expense.aggregate.mockRestore();
         });
-        
+
         it('should return 400 if startDate or endDate is missing', async () => {
             const response = await request(app)
                 .get('/api/expenses/reports')

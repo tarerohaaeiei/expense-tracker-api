@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.getExpenses = async (req, res) => {
-  const { startDate, endDate, category } = req.query;
+  const { startDate, endDate, category, page = 1, limit = 10 } = req.query;
   const query = { user: req.userId };
 
   if (startDate && endDate) {
@@ -16,12 +16,23 @@ exports.getExpenses = async (req, res) => {
   }
 
   try {
-    const expenses = await Expense.find(query);
-    res.json(expenses);
+    const expenses = await Expense.find(query)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit)); 
+
+    const totalExpenses = await Expense.countDocuments(query);
+
+    res.json({
+      totalExpenses,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalExpenses / limit),
+      expenses,
+    });
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
 
 
 exports.addExpense = async (req, res) => {
