@@ -1,13 +1,25 @@
 const Expense = require('../models/Expense');
 
 exports.getExpenses = async (req, res) => {
+  const { startDate, endDate, category } = req.query;
+  const query = { user: req.userId };
+
+  if (startDate && endDate) {
+    query.date = { $gte: new Date(startDate), $lte: new Date(endDate) };
+  }
+
+  if (category) {
+    query.category = category;
+  }
+
   try {
-    const expenses = await Expense.find({ user: req.userId });
+    const expenses = await Expense.find(query);
     res.json(expenses);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
   }
 };
+
 
 exports.addExpense = async (req, res) => {
   const { title, amount, date, category, notes } = req.body;
