@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     await user.save();
 
     const payload = { userId: user._id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '3h' });
 
     res.status(201).json({ token });
   } catch (err) {
@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
     }
 
     const payload = { userId: user._id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '3h' });
 
     res.json({ token });
   } catch (err) {
