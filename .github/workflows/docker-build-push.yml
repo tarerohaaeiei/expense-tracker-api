@@ -3,11 +3,33 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # Adjust the branch as needed
+      - main  
 
 jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        env: 
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: npm test
+
   build:
     runs-on: ubuntu-latest
+    needs: test  
 
     steps:
       - name: Checkout code
@@ -22,9 +44,6 @@ jobs:
           registry: gcr.io
           username: _json_key
           password: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Run tests
-        run: npm test
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
