@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Routes
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK krub' });
+    res.status(200).json({ status: 'OK' });
 });
 
 app.use('/api/auth', require('./routes/authRoutes'));
